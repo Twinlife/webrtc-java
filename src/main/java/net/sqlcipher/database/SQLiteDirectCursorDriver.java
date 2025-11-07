@@ -100,7 +100,7 @@ public class SQLiteDirectCursorDriver implements SQLiteCursorDriver {
     }
 
     @Override
-    public void cursorRequeried(android.database.Cursor cursor) {
+    public void cursorRequeried(Cursor cursor) {
         // Do nothing
     }
 

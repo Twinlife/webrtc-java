@@ -16,7 +16,7 @@
 
 package net.sqlcipher;
 
-import android.util.Config;
+//import android.util.Config;
 
 import net.sqlcipher.database.SQLiteProgram;
 
@@ -27,7 +27,7 @@ public class DatabaseUtils {
     private static final String TAG = "DatabaseUtils";
 
     private static final boolean DEBUG = false;
-    private static final boolean LOCAL_LOGV = DEBUG ? Config.LOGD : Config.LOGV;
+    private static final boolean LOCAL_LOGV = false; // DEBUG ? Config.LOGD : Config.LOGV;
 
     /**
      * Binds the given Object to the given SQLiteProgram using the proper
@@ -94,7 +94,7 @@ public class DatabaseUtils {
     // private static Collator mColl = null;
 
     public static void cursorFillWindow(final Cursor cursor,
-                                        int position, final android.database.CursorWindow window) {
+                                        int position, final CursorWindow window) {
         if (position < 0 || position >= cursor.getCount()) {
             return;
         }

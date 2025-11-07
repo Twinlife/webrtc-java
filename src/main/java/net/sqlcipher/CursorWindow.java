@@ -16,12 +16,12 @@
 
 package net.sqlcipher;
 
-import android.database.CharArrayBuffer;
+import net.sqlcipher.database.SQLiteClosable;
 
 /**
  * A buffer containing multiple cursor rows.
  */
-public class CursorWindow extends android.database.CursorWindow {
+public class CursorWindow extends SQLiteClosable {
     /**
      * The pointer to the native window class
      */
@@ -50,7 +50,7 @@ public class CursorWindow extends android.database.CursorWindow {
      * @param localWindow true if this window will be used in this process only
      */
     public CursorWindow(boolean localWindow) {
-        super(localWindow);
+        // super(localWindow);
         mStartPos = 0;
         if (allocation == null) {
             allocation = new DefaultCursorWindowAllocation();
@@ -623,6 +623,6 @@ public class CursorWindow extends android.database.CursorWindow {
     protected void onAllReferencesReleased() {
         close_native();
 
-        super.onAllReferencesReleased();
+        // SCz super.onAllReferencesReleased();
     }
 }

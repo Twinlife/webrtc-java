@@ -16,21 +16,14 @@
 
 package net.sqlcipher.database;
 
-import android.database.DataSetObserver;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Process;
 import android.text.TextUtils;
-import android.util.Config;
 import android.util.Log;
 
 import net.sqlcipher.AbstractWindowedCursor;
 import net.sqlcipher.CursorWindow;
-import net.sqlcipher.SQLException;
 
 import org.webrtc.BuildConfig;
 
-import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -138,7 +131,7 @@ public class SQLiteCursor extends AbstractWindowedCursor {
     /**
      * @hide
      */
-    final private class QueryThread implements Runnable {
+    /* final private class QueryThread implements Runnable {
         private final int mThreadState;
 
         QueryThread(int version) {
@@ -158,7 +151,7 @@ public class SQLiteCursor extends AbstractWindowedCursor {
         public void run() {
             // use cached mWindow, to avoid get null mWindow
             CursorWindow cw = mWindow;
-            Process.setThreadPriority(Process.myTid(), Process.THREAD_PRIORITY_BACKGROUND);
+            // Process.setThreadPriority(Process.myTid(), Process.THREAD_PRIORITY_BACKGROUND);
             // the cursor's state doesn't change
             while (true) {
                 if (mLock == null) {
@@ -192,13 +185,13 @@ public class SQLiteCursor extends AbstractWindowedCursor {
                 }
             }
         }
-    }
+    }*/
 
 
     /**
      * @hide
      */
-    protected static class MainThreadNotificationHandler extends Handler {
+    /*protected static class MainThreadNotificationHandler extends Handler {
 
         private final WeakReference<SQLiteCursor> wrappedCursor;
 
@@ -212,12 +205,12 @@ public class SQLiteCursor extends AbstractWindowedCursor {
                 cursor.notifyDataSetChange();
             }
         }
-    }
+    }*/
 
     /**
      * @hide
      */
-    protected MainThreadNotificationHandler mNotificationHandler;
+    /* protected MainThreadNotificationHandler mNotificationHandler;
 
     public void registerDataSetObserver(DataSetObserver observer) {
         super.registerDataSetObserver(observer);
@@ -235,7 +228,7 @@ public class SQLiteCursor extends AbstractWindowedCursor {
             }
         }
 
-    }
+    }*/
 
     /**
      * Execute a query and provide access to its result set through a Cursor
@@ -348,8 +341,8 @@ public class SQLiteCursor extends AbstractWindowedCursor {
         // return -1 means not finished
         if (mCount == NO_COUNT) {
             mCount = startPos + mInitialRead;
-            Thread t = new Thread(new QueryThread(mCursorState), "query thread");
-            t.start();
+            //Thread t = new Thread(new QueryThread(mCursorState), "query thread");
+            //t.start();
         }
     }
 
@@ -384,62 +377,6 @@ public class SQLiteCursor extends AbstractWindowedCursor {
         }
     }
 
-    /**
-     * @hide
-     * @deprecated
-     */
-    // @Override
-    public boolean deleteRow() {
-        checkPosition();
-
-        // Only allow deletes if there is an ID column, and the ID has been read from it
-        if (mRowIdColumnIndex == -1 || mCurrentRowID == null) {
-            if (BuildConfig.DEBUG) {
-                Log.e(TAG,
-                        "Could not delete row because either the row ID column is not available or it" +
-                                "has not been read.");
-            }
-            return false;
-        }
-
-        boolean success;
-
-        /*
-         * Ensure we don't change the state of the database when another
-         * thread is holding the database lock. requery() and moveTo() are also
-         * synchronized here to make sure they get the state of the database
-         * immediately following the DELETE.
-         */
-        mDatabase.lock();
-        try {
-            try {
-                mDatabase.delete(mEditTable, mColumns[mRowIdColumnIndex] + "=?",
-                        new String[]{mCurrentRowID.toString()});
-                success = true;
-            } catch (SQLException e) {
-                success = false;
-            }
-
-            int pos = mPos;
-            requery();
-
-            /*
-             * Ensure proper cursor state. Note that mCurrentRowID changes
-             * in this call.
-             */
-            moveToPosition(pos);
-        } finally {
-            mDatabase.unlock();
-        }
-
-        if (success) {
-            onChange(true);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     @Override
     public String[] getColumnNames() {
         return mColumns;
@@ -455,100 +392,6 @@ public class SQLiteCursor extends AbstractWindowedCursor {
         return !TextUtils.isEmpty(mEditTable);
     }
 
-    /**
-     * @hide
-     * @deprecated
-     */
-    //  @Override
-    public boolean commitUpdates(Map<? extends Long,
-            ? extends Map<String, Object>> additionalValues) {
-        if (!supportsUpdates()) {
-            if (BuildConfig.DEBUG) {
-                Log.e(TAG, "commitUpdates not supported on this cursor, did you "
-                        + "include the _id column?");
-            }
-            return false;
-        }
-
-        /*
-         * Prevent other threads from changing the updated rows while they're
-         * being processed here.
-         */
-        synchronized (mUpdatedRows) {
-            if (additionalValues != null) {
-                mUpdatedRows.putAll(additionalValues);
-            }
-
-            if (mUpdatedRows.size() == 0) {
-                return true;
-            }
-
-            /*
-             * Prevent other threads from changing the database state while
-             * we process the updated rows, and prevents us from changing the
-             * database behind the back of another thread.
-             */
-            mDatabase.beginTransaction();
-            try {
-                StringBuilder sql = new StringBuilder(128);
-
-                // For each row that has been updated
-                for (Map.Entry<Long, Map<String, Object>> rowEntry :
-                        mUpdatedRows.entrySet()) {
-                    Map<String, Object> values = rowEntry.getValue();
-                    Long rowIdObj = rowEntry.getKey();
-
-                    if (rowIdObj == null || values == null) {
-                        throw new IllegalStateException("null rowId or values found! rowId = "
-                                + rowIdObj + ", values = " + values);
-                    }
-
-                    if (values.size() == 0) {
-                        continue;
-                    }
-
-                    long rowId = rowIdObj;
-
-                    Iterator<Map.Entry<String, Object>> valuesIter =
-                            values.entrySet().iterator();
-
-                    sql.setLength(0);
-                    sql.append("UPDATE " + mEditTable + " SET ");
-
-                    // For each column value that has been updated
-                    Object[] bindings = new Object[values.size()];
-                    int i = 0;
-                    while (valuesIter.hasNext()) {
-                        Map.Entry<String, Object> entry = valuesIter.next();
-                        sql.append(entry.getKey());
-                        sql.append("=?");
-                        bindings[i] = entry.getValue();
-                        if (valuesIter.hasNext()) {
-                            sql.append(", ");
-                        }
-                        i++;
-                    }
-
-                    sql.append(" WHERE " + mColumns[mRowIdColumnIndex]
-                            + '=' + rowId);
-                    sql.append(';');
-                    mDatabase.execSQL(sql.toString(), bindings);
-                    mDatabase.rowUpdated(mEditTable, rowId);
-                }
-                mDatabase.setTransactionSuccessful();
-            } finally {
-                mDatabase.endTransaction();
-            }
-
-            mUpdatedRows.clear();
-        }
-
-        // Let any change observers know about the update
-        onChange(true);
-
-        return true;
-    }
-
     private void deactivateCommon() {
         if (BuildConfig.DEBUG) Log.v(TAG, "<<< Releasing cursor " + this);
         mCursorState = 0;
@@ -560,64 +403,11 @@ public class SQLiteCursor extends AbstractWindowedCursor {
     }
 
     @Override
-    public void deactivate() {
-        super.deactivate();
-        deactivateCommon();
-        mDriver.cursorDeactivated();
-    }
-
-    @Override
     public void close() {
         super.close();
         deactivateCommon();
         mQuery.close();
         mDriver.cursorClosed();
-    }
-
-    @Override
-    public boolean requery() {
-        if (isClosed()) {
-            return false;
-        }
-        long timeStart = 0;
-        if (Config.LOGV) {
-            timeStart = System.currentTimeMillis();
-        }
-        /*
-         * Synchronize on the database lock to ensure that mCount matches the
-         * results of mQuery.requery().
-         */
-        mDatabase.lock();
-        try {
-            if (mWindow != null) {
-                mWindow.clear();
-            }
-            mPos = -1;
-            // This one will recreate the temp table, and get its count
-            mDriver.cursorRequeried(this);
-            mCount = NO_COUNT;
-            mCursorState++;
-            queryThreadLock();
-            try {
-                mQuery.requery();
-            } finally {
-                queryThreadUnlock();
-            }
-        } finally {
-            mDatabase.unlock();
-        }
-
-        if (BuildConfig.DEBUG) {
-            Log.v("DatabaseWindow", "closing window in requery()");
-            Log.v(TAG, "--- Requery()ed cursor " + this + ": " + mQuery);
-        }
-
-        boolean result = super.requery();
-        if (BuildConfig.DEBUG) {
-            long timeEnd = System.currentTimeMillis();
-            Log.v(TAG, "requery (" + (timeEnd - timeStart) + " ms): " + mDriver.toString());
-        }
-        return result;
     }
 
     @Override
@@ -672,7 +462,7 @@ public class SQLiteCursor extends AbstractWindowedCursor {
 
 
     @Override
-    public void fillWindow(int requiredPos, android.database.CursorWindow window) {
+    public void fillWindow(int requiredPos, CursorWindow window) {
         int startPos = 0;
         if (mWindow == null) {
             // If there isn't a window set already it will only be accessed locally
@@ -706,8 +496,8 @@ public class SQLiteCursor extends AbstractWindowedCursor {
         // return -1 means not finished
         if (mCount == NO_COUNT) {
             mCount = startPos + mInitialRead;
-            Thread t = new Thread(new QueryThread(mCursorState), "query thread");
-            t.start();
+            //Thread t = new Thread(new QueryThread(mCursorState), "query thread");
+            //t.start();
         }
     }
 

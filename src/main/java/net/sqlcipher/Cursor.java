@@ -16,10 +16,12 @@
 
 package net.sqlcipher;
 
+import java.io.Closeable;
+
 /**
  * Extension of android.database.Cursor to support getType() for API < 11.
  */
-public interface Cursor extends android.database.Cursor {
+public interface Cursor extends Closeable /*extends android.database.Cursor */ {
     /*
      * Values returned by {@link #getType(int)}.
      * These should be consistent with the corresponding types defined in CursorWindow.h
@@ -50,6 +52,159 @@ public interface Cursor extends android.database.Cursor {
     static final int FIELD_TYPE_BLOB = 4;
 
     /**
+     * Returns the numbers of rows in the cursor.
+     *
+     * @return the number of rows in the cursor.
+     */
+    int getCount();
+
+    /**
+     * Returns the current position of the cursor in the row set.
+     * The value is zero-based. When the row set is first returned the cursor
+     * will be at positon -1, which is before the first row. After the
+     * last row is returned another call to next() will leave the cursor past
+     * the last entry, at a position of count().
+     *
+     * @return the current cursor position.
+     */
+    int getPosition();
+
+    /**
+      * Move the cursor to an absolute position. The valid
+      * range of values is -1 &lt;= position &lt;= count.
+      *
+      * <p>This method will return true if the request destination was reachable,
+      * otherwise, it returns false.
+      *
+      * @param position the zero-based position to move to.
+      * @return whether the requested move fully succeeded.
+      */
+    boolean moveToPosition(int position);
+
+    /**
+     * Move the cursor to the first row.
+     *
+     * <p>This method will return false if the cursor is empty.
+     *
+     * @return whether the move succeeded.
+     */
+    boolean moveToFirst();
+
+    /**
+     * Move the cursor to the next row.
+     *
+     * <p>This method will return false if the cursor is already past the
+     * last entry in the result set.
+     *
+     * @return whether the move succeeded.
+     */
+    boolean moveToNext();
+
+    /**
+     * Returns whether the cursor is pointing to the position after the last
+     * row.
+     *
+     * @return whether the cursor is after the last result.
+     */
+    boolean isAfterLast();
+
+    /**
+     * Returns the value of the requested column as a byte array.
+     *
+     * <p>The result and whether this method throws an exception when the
+     * column value is null or the column type is not a blob type is
+     * implementation-defined.
+     *
+     * @param columnIndex the zero-based index of the target column.
+     * @return the value of that column as a byte array.
+     */
+    byte[] getBlob(int columnIndex);
+
+    /**
+     * Returns the value of the requested column as a String.
+     *
+     * <p>The result and whether this method throws an exception when the
+     * column value is null or the column type is not a string type is
+     * implementation-defined.
+     *
+     * @param columnIndex the zero-based index of the target column.
+     * @return the value of that column as a String.
+     */
+    String getString(int columnIndex);
+
+    /**
+     * Returns the value of the requested column as a short.
+     *
+     * <p>The result and whether this method throws an exception when the
+     * column value is null, the column type is not an integral type, or the
+     * integer value is outside the range [<code>Short.MIN_VALUE</code>,
+     * <code>Short.MAX_VALUE</code>] is implementation-defined.
+     *
+     * @param columnIndex the zero-based index of the target column.
+     * @return the value of that column as a short.
+     */
+    short getShort(int columnIndex);
+
+    /**
+     * Returns the value of the requested column as an int.
+     *
+     * <p>The result and whether this method throws an exception when the
+     * column value is null, the column type is not an integral type, or the
+     * integer value is outside the range [<code>Integer.MIN_VALUE</code>,
+     * <code>Integer.MAX_VALUE</code>] is implementation-defined.
+     *
+     * @param columnIndex the zero-based index of the target column.
+     * @return the value of that column as an int.
+     */
+    int getInt(int columnIndex);
+
+    /**
+     * Returns the value of the requested column as a long.
+     *
+     * <p>The result and whether this method throws an exception when the
+     * column value is null, the column type is not an integral type, or the
+     * integer value is outside the range [<code>Long.MIN_VALUE</code>,
+     * <code>Long.MAX_VALUE</code>] is implementation-defined.
+     *
+     * @param columnIndex the zero-based index of the target column.
+     * @return the value of that column as a long.
+     */
+    long getLong(int columnIndex);
+    /**
+      * Returns the value of the requested column as a float.
+      *
+      * <p>The result and whether this method throws an exception when the
+      * column value is null, the column type is not a floating-point type, or the
+      * floating-point value is not representable as a <code>float</code> value is
+      * implementation-defined.
+      *
+      * @param columnIndex the zero-based index of the target column.
+      * @return the value of that column as a float.
+      */
+     float getFloat(int columnIndex);
+
+     /**
+      * Returns the value of the requested column as a double.
+      *
+      * <p>The result and whether this method throws an exception when the
+      * column value is null, the column type is not a floating-point type, or the
+      * floating-point value is not representable as a <code>double</code> value is
+      * implementation-defined.
+      *
+      * @param columnIndex the zero-based index of the target column.
+      * @return the value of that column as a double.
+      */
+    double getDouble(int columnIndex);
+
+    /**
+     * Returns <code>true</code> if the value in the indicated column is null.
+     *
+     * @param columnIndex the zero-based index of the target column.
+     * @return whether the column value is null.
+     */
+    boolean isNull(int columnIndex);
+
+    /**
      * Returns data type of the given column's value.
      * The preferred type of the column is returned but the data may be converted to other types
      * as documented in the get-type methods such as {@link #getInt(int)}, {@link #getFloat(int)}
@@ -69,4 +224,18 @@ public interface Cursor extends android.database.Cursor {
      * @return column value type
      */
     int getType(int columnIndex);
+
+    /**
+     * Return total number of columns
+     *
+     * @return number of columns
+     */
+    int getColumnCount();
+
+    /**
+     * Closes the Cursor, releasing all of its resources and making it completely invalid.
+     * Unlike {@link # deactivate()} a call to {@link # requery()} will not make the Cursor valid
+     * again.
+     */
+    void close();
 }

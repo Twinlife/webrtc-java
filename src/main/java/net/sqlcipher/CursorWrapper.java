@@ -19,12 +19,12 @@ package net.sqlcipher;
 /**
  * Extension of android.database.CursorWrapper to support getType() for API < 11.
  */
-public class CursorWrapper extends android.database.CursorWrapper implements Cursor {
+public class CursorWrapper /* extends android.database.CursorWrapper */ implements Cursor {
 
     private final Cursor mCursor;
 
     public CursorWrapper(Cursor cursor) {
-        super(cursor);
+        // super(cursor);
         mCursor = cursor;
     }
 
@@ -34,6 +34,86 @@ public class CursorWrapper extends android.database.CursorWrapper implements Cur
 
     public Cursor getWrappedCursor() {
         return mCursor;
+    }
+
+    @Override
+    public boolean isAfterLast() {
+        return mCursor.isAfterLast();
+    }
+
+    @Override
+    public int getCount() {
+        return mCursor.getCount();
+    }
+
+    @Override
+    public boolean moveToFirst() {
+        return mCursor.moveToFirst();
+    }
+
+    @Override
+    public int getColumnCount() {
+        return mCursor.getColumnCount();
+    }
+
+    @Override
+    public double getDouble(int columnIndex) {
+        return mCursor.getDouble(columnIndex);
+    }
+
+    @Override
+    public float getFloat(int columnIndex) {
+        return mCursor.getFloat(columnIndex);
+    }
+
+    @Override
+    public int getInt(int columnIndex) {
+        return mCursor.getInt(columnIndex);
+    }
+
+    @Override
+    public long getLong(int columnIndex) {
+        return mCursor.getLong(columnIndex);
+    }
+
+    @Override
+    public short getShort(int columnIndex) {
+        return mCursor.getShort(columnIndex);
+    }
+
+    @Override
+    public String getString(int columnIndex) {
+        return mCursor.getString(columnIndex);
+    }
+
+    @Override
+    public byte[] getBlob(int columnIndex) {
+        return mCursor.getBlob(columnIndex);
+    }
+
+    @Override
+    public boolean isNull(int columnIndex) {
+        return mCursor.isNull(columnIndex);
+    }
+
+    @Override
+    public boolean moveToPosition(int position) {
+        return mCursor.moveToPosition(position);
+    }
+
+    @Override
+    public boolean moveToNext() {
+        return mCursor.moveToNext();
+    }
+
+    @Override
+    public int getPosition() {
+        return mCursor.getPosition();
+    }
+
+    @Override
+    public void close() {
+        mCursor.close();
     }
 }
 

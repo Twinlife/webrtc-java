@@ -16,18 +16,9 @@
 
 package net.sqlcipher;
 
-import android.content.ContentResolver;
-import android.database.CharArrayBuffer;
-import android.database.ContentObservable;
-import android.database.ContentObserver;
-import android.database.DataSetObservable;
-import android.database.DataSetObserver;
-import android.net.Uri;
-import android.os.Bundle;
 import android.util.Config;
 import android.util.Log;
 
-import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,13 +27,8 @@ import java.util.Map;
  * This is an abstract cursor class that handles a lot of the common code
  * that all cursors need to deal with and is provided for convenience reasons.
  */
-public abstract class AbstractCursor implements android.database.CrossProcessCursor, net.sqlcipher.Cursor {
+public abstract class AbstractCursor implements /* CrossProcessCursor,*/ net.sqlcipher.Cursor {
     private static final String TAG = "Cursor";
-
-    DataSetObservable mDataSetObservable = new DataSetObservable();
-    ContentObservable mContentObservable = new ContentObservable();
-
-    private Bundle mExtras = Bundle.EMPTY;
 
     /* -------------------------------------------------------- */
     /* These need to be implemented by subclasses */
@@ -84,39 +70,14 @@ public abstract class AbstractCursor implements android.database.CrossProcessCur
         return getColumnNames().length;
     }
 
-    public void deactivate() {
-        deactivateInternal();
-    }
-
-    /**
-     * @hide
-     */
-    public void deactivateInternal() {
-        if (mSelfObserver != null) {
-            mContentResolver.unregisterContentObserver(mSelfObserver);
-            mSelfObserverRegistered = false;
-        }
-        mDataSetObservable.notifyInvalidated();
-    }
-
-    public boolean requery() {
-        if (mSelfObserver != null && mSelfObserverRegistered == false) {
-
-            mContentResolver.registerContentObserver(mNotifyUri, true, mSelfObserver);
-            mSelfObserverRegistered = true;
-        }
-        mDataSetObservable.notifyChanged();
-        return true;
-    }
-
     public boolean isClosed() {
         return mClosed;
     }
 
     public void close() {
         mClosed = true;
-        mContentObservable.unregisterAll();
-        deactivateInternal();
+        // mContentObservable.unregisterAll();
+        // deactivateInternal();
     }
 
     /**
@@ -217,7 +178,7 @@ public abstract class AbstractCursor implements android.database.CrossProcessCur
      * @param position start position of data
      * @param window
      */
-    public void fillWindow(int position, android.database.CursorWindow window) {
+    public void fillWindow(int position, CursorWindow window) {
         DatabaseUtils.cursorFillWindow(this, position, window);
     }
 
@@ -420,110 +381,8 @@ public abstract class AbstractCursor implements android.database.CrossProcessCur
      * @hide
      * @deprecated
      */
-    public boolean commitUpdates() {
-        return commitUpdates(null);
-    }
-
-    /**
-     * @hide
-     * @deprecated
-     */
     public boolean supportsUpdates() {
         return mRowIdColumnIndex != -1;
-    }
-
-    public void registerContentObserver(ContentObserver observer) {
-        mContentObservable.registerObserver(observer);
-    }
-
-    public void unregisterContentObserver(ContentObserver observer) {
-        // cursor will unregister all observers when it close
-        if (!mClosed) {
-            mContentObservable.unregisterObserver(observer);
-        }
-    }
-
-    /**
-     * This is hidden until the data set change model has been re-evaluated.
-     *
-     * @hide
-     */
-    protected void notifyDataSetChange() {
-        mDataSetObservable.notifyChanged();
-    }
-
-    /**
-     * This is hidden until the data set change model has been re-evaluated.
-     *
-     * @hide
-     */
-    protected DataSetObservable getDataSetObservable() {
-        return mDataSetObservable;
-
-    }
-
-    public void registerDataSetObserver(DataSetObserver observer) {
-        mDataSetObservable.registerObserver(observer);
-
-    }
-
-    public void unregisterDataSetObserver(DataSetObserver observer) {
-        mDataSetObservable.unregisterObserver(observer);
-    }
-
-    /**
-     * Subclasses must call this method when they finish committing updates to notify all
-     * observers.
-     *
-     * @param selfChange
-     */
-    protected void onChange(boolean selfChange) {
-        synchronized (mSelfObserverLock) {
-            mContentObservable.dispatchChange(selfChange);
-            if (mNotifyUri != null && selfChange) {
-                mContentResolver.notifyChange(mNotifyUri, mSelfObserver);
-            }
-        }
-    }
-
-    /**
-     * Specifies a content URI to watch for changes.
-     *
-     * @param cr        The content resolver from the caller's context.
-     * @param notifyUri The URI to watch for changes. This can be a
-     *                  specific row URI, or a base URI for a whole class of content.
-     */
-    public void setNotificationUri(ContentResolver cr, Uri notifyUri) {
-        synchronized (mSelfObserverLock) {
-            mNotifyUri = notifyUri;
-            mContentResolver = cr;
-            if (mSelfObserver != null) {
-                mContentResolver.unregisterContentObserver(mSelfObserver);
-            }
-            mSelfObserver = new SelfContentObserver(this);
-            mContentResolver.registerContentObserver(mNotifyUri, true, mSelfObserver);
-            mSelfObserverRegistered = true;
-        }
-    }
-
-    public Uri getNotificationUri() {
-        return mNotifyUri;
-    }
-
-    public boolean getWantsAllOnMoveCalls() {
-        return false;
-    }
-
-    public void setExtras(Bundle extras) {
-        mExtras = (extras == null) ? Bundle.EMPTY : extras;
-    }
-
-    public Bundle getExtras() {
-        return mExtras;
-    }
-
-    public Bundle respond(Bundle extras) {
-        return Bundle.EMPTY;
     }
 
     /**
@@ -575,35 +434,9 @@ public abstract class AbstractCursor implements android.database.CrossProcessCur
 
     @Override
     protected void finalize() {
-        if (mSelfObserver != null && mSelfObserverRegistered == true) {
-            mContentResolver.unregisterContentObserver(mSelfObserver);
-        }
-    }
-
-    /**
-     * Cursors use this class to track changes others make to their URI.
-     */
-    protected static class SelfContentObserver extends ContentObserver {
-        WeakReference<AbstractCursor> mCursor;
-
-        public SelfContentObserver(AbstractCursor cursor) {
-            super(null);
-            mCursor = new WeakReference<AbstractCursor>(cursor);
-        }
-
-        @Override
-        public boolean deliverSelfNotifications() {
-            return false;
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            AbstractCursor cursor = mCursor.get();
-            if (cursor != null) {
-                cursor.onChange(false);
-            }
-        }
-
+        //if (mSelfObserver != null && mSelfObserverRegistered == true) {
+        //    mContentResolver.unregisterContentObserver(mSelfObserver);
+        //}
     }
 
     /**
@@ -628,10 +461,5 @@ public abstract class AbstractCursor implements android.database.CrossProcessCur
      * pointing at.
      */
     protected Long mCurrentRowID;
-    protected ContentResolver mContentResolver;
     protected boolean mClosed = false;
-    private Uri mNotifyUri;
-    private ContentObserver mSelfObserver;
-    final private Object mSelfObserverLock = new Object();
-    private boolean mSelfObserverRegistered;
 }

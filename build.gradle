@@ -4,15 +4,15 @@ plugins {
 }
 
 android {
-    compileSdkVersion 35
+    compileSdkVersion libs.versions.compile.sdk.version.get()
     namespace 'org.webrtc'
 
     buildFeatures {
         buildConfig = true
     }
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 35
+        minSdkVersion libs.versions.min.sdk.version.get() as int
+        targetSdkVersion libs.versions.target.sdk.version.get() as int
     }
 
     compileOptions {

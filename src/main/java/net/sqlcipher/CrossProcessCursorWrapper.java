@@ -1,20 +1,20 @@
 package net.sqlcipher;
 
-import android.database.CrossProcessCursor;
-import android.database.CursorWindow;
+// import android.database.CrossProcessCursor;
+// import android.database.CursorWindow;
 
-public class CrossProcessCursorWrapper extends CursorWrapper implements CrossProcessCursor {
+public class CrossProcessCursorWrapper extends CursorWrapper /* implements CrossProcessCursor */ {
 
     public CrossProcessCursorWrapper(Cursor cursor) {
         super(cursor);
     }
 
-    @Override
+    /*@Override
     public CursorWindow getWindow() {
         return null;
-    }
+    }*/
 
-    @Override
+    /* @Override
     public void fillWindow(int position, CursorWindow window) {
         DatabaseUtils.cursorFillWindow(this, position, window);
     }
@@ -22,5 +22,5 @@ public class CrossProcessCursorWrapper extends CursorWrapper implements CrossPro
     @Override
     public boolean onMove(int oldPosition, int newPosition) {
         return true;
-    }
+    }*/
 }

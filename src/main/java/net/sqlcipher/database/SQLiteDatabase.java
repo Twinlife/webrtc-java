@@ -17,7 +17,7 @@
 package net.sqlcipher.database;
 
 import android.content.ContentValues;
-import android.os.Debug;
+// import android.os.Debug;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
@@ -390,7 +390,7 @@ public class SQLiteDatabase extends SQLiteClosable /* implements
             if (mLock.getHoldCount() == 1) {
                 // Use elapsed real-time since the CPU may sleep when waiting for IO
                 mLockAcquiredWallTime = SystemClock.elapsedRealtime();
-                mLockAcquiredThreadTime = Debug.threadCpuTimeNanos();
+                // mLockAcquiredThreadTime = Debug.threadCpuTimeNanos();
             }
         }
     }
@@ -409,7 +409,7 @@ public class SQLiteDatabase extends SQLiteClosable /* implements
             if (mLock.getHoldCount() == 1) {
                 // Use elapsed real-time since the CPU may sleep when waiting for IO
                 mLockAcquiredWallTime = SystemClock.elapsedRealtime();
-                mLockAcquiredThreadTime = Debug.threadCpuTimeNanos();
+                // mLockAcquiredThreadTime = Debug.threadCpuTimeNanos();
             }
         }
     }
@@ -452,9 +452,9 @@ public class SQLiteDatabase extends SQLiteClosable /* implements
                 (elapsedTime - mLastLockMessageTime) < LOCK_WARNING_WINDOW_IN_MS) {
             return;
         }
-        if (lockedTime > LOCK_ACQUIRED_WARNING_TIME_IN_MS) {
+        if (lockedTime > LOCK_ACQUIRED_WARNING_TIME_IN_MS && BuildConfig.DEBUG) {
             int threadTime = (int)
-                    ((Debug.threadCpuTimeNanos() - mLockAcquiredThreadTime) / 1000000);
+                    0; // ((Debug.threadCpuTimeNanos() - mLockAcquiredThreadTime) / 1000000);
             if (threadTime > LOCK_ACQUIRED_WARNING_THREAD_TIME_IN_MS ||
                     lockedTime > LOCK_ACQUIRED_WARNING_TIME_IN_MS_ALWAYS_PRINT) {
                 mLastLockMessageTime = elapsedTime;
@@ -664,7 +664,7 @@ public class SQLiteDatabase extends SQLiteClosable /* implements
             // Reset the lock acquire time since we know that the thread was willing to yield
             // the lock at this time.
             mLockAcquiredWallTime = SystemClock.elapsedRealtime();
-            mLockAcquiredThreadTime = Debug.threadCpuTimeNanos();
+            // mLockAcquiredThreadTime = Debug.threadCpuTimeNanos();
             return false;
         }
         setTransactionSuccessful();
@@ -1877,19 +1877,19 @@ public class SQLiteDatabase extends SQLiteClosable /* implements
     /* begin SQLiteSupportDatabase methods */
 
     //@Override
-    public android.database.Cursor query(String query) {
+    public Cursor query(String query) {
         return rawQuery(query, null);
     }
 
     //@Override
-    public android.database.Cursor query(String query, Object[] bindArgs) {
+    public Cursor query(String query, Object[] bindArgs) {
         return rawQuery(query, bindArgs);
     }
 
     //@Override
     public long insert(String table, int conflictAlgorithm,
                        ContentValues values)
-            throws android.database.SQLException {
+            throws SQLException {
         return insertWithOnConflict(table, null, values, conflictAlgorithm);
     }
 
