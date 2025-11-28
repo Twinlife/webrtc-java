@@ -15,7 +15,7 @@ import androidx.annotation.NonNull;
  * Represents a websocket connection.
  */
 public class Session {
-    private long nativeSession; // pointer to the websocket::Session* instance
+    private volatile long nativeSession; // pointer to the websocket::Session* instance
 
     public Session(long nativeSession) {
         this.nativeSession = nativeSession;
@@ -38,9 +38,11 @@ public class Session {
 
     public boolean close() {
 
-        boolean result = nativeClose(this.nativeSession);
+        // Get the native sessionId and invalidate it before running the close().
+        // It is safe to call nativeXXX() with a null session instance.
+        long session = this.nativeSession;
         this.nativeSession = 0;
-        return result;
+        return nativeClose(session);
     }
 
     public long getSessionId() {
