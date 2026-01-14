@@ -424,7 +424,7 @@ public class PeerConnection {
     }
   }
 
-  /** Java version of rtc::KeyType */
+  /** Java version of webrtc::KeyType */
   public enum KeyType { RSA, ECDSA }
 
   /** Java version of PeerConnectionInterface.ContinualGatheringPolicy */
@@ -553,10 +553,6 @@ public class PeerConnection {
     // This is an optional wrapper for the C++ webrtc::TurnCustomizer.
     @Nullable public TurnCustomizer turnCustomizer;
 
-    // Actively reset the SRTP parameters whenever the DTLS transports underneath are reset for
-    // every offer/answer negotiation.This is only intended to be a workaround for crbug.com/835958
-    public boolean activeResetSrtpParams;
-
     /**
      * Defines advanced optional cryptographic settings related to SRTP and
      * frame encryption for native WebRTC. Setting this will overwrite any
@@ -631,7 +627,6 @@ public class PeerConnection {
       screencastMinBitrate = null;
       networkPreference = AdapterType.UNKNOWN;
       sdpSemantics = SdpSemantics.UNIFIED_PLAN;
-      activeResetSrtpParams = false;
       cryptoOptions = null;
       // --twinlife-- 180203
       hostAddresses = null;
@@ -822,11 +817,6 @@ public class PeerConnection {
     @CalledByNative("RTCConfiguration")
     SdpSemantics getSdpSemantics() {
       return sdpSemantics;
-    }
-
-    @CalledByNative("RTCConfiguration")
-    boolean getActiveResetSrtpParams() {
-      return activeResetSrtpParams;
     }
 
     @Nullable
@@ -1209,17 +1199,19 @@ public class PeerConnection {
    * function is called. The max_size_bytes argument is ignored, it is added
    * for future use.
    */
-  public boolean startRtcEventLog(int file_descriptor, int max_size_bytes) {
-    return nativeStartRtcEventLog(file_descriptor, max_size_bytes);
-  }
+  // --twinlife 2025-12-21: remove rtc event log
+  // public boolean startRtcEventLog(int file_descriptor, int max_size_bytes) {
+  //  return nativeStartRtcEventLog(file_descriptor, max_size_bytes);
+  // }
 
   /**
    * Stops recording an RTC event log. If no RTC event log is currently being
    * recorded, this call will have no effect.
    */
-  public void stopRtcEventLog() {
-    nativeStopRtcEventLog();
-  }
+  // public void stopRtcEventLog() {
+  //  nativeStopRtcEventLog();
+  // }
+  // --twinlife 2025-12-21: remove rtc event log
 
   // TODO(fischman): add support for DTMF-related methods once that API
   // stabilizes.
@@ -1330,6 +1322,7 @@ public class PeerConnection {
       long track, RtpTransceiver.RtpTransceiverInit init);
   private native RtpTransceiver nativeAddTransceiverOfType(
       MediaStreamTrack.MediaType mediaType, RtpTransceiver.RtpTransceiverInit init);
-  private native boolean nativeStartRtcEventLog(int file_descriptor, int max_size_bytes);
-  private native void nativeStopRtcEventLog();
+  // --twinlife 2025-12-21: remove rtc event log
+  // private native boolean nativeStartRtcEventLog(int file_descriptor, int max_size_bytes);
+  // private native void nativeStopRtcEventLog();
 }

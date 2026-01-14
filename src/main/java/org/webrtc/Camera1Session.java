@@ -135,17 +135,10 @@ class Camera1Session implements CameraSession {
     if (!captureToTexture) {
       parameters.setPreviewFormat(captureFormat.imageFormat);
     }
-    // -twinlife- 161118
-    if (parameters.isVideoStabilizationSupported()) {
-      parameters.setVideoStabilization(true);
-    }
-    // -twinlife- 161118
 
-    // -twinlife- 161118
     if (parameters.isVideoStabilizationSupported()) {
       parameters.setVideoStabilization(true);
     }
-    // -twinlife- 161118    
     if (focusModes != null && focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
       parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
     }

@@ -105,15 +105,21 @@ class MediaCodecVideoDecoderFactory implements VideoDecoderFactory {
 
   // Returns true if the given MediaCodecInfo indicates a supported encoder for the given type.
   private boolean isSupportedCodec(MediaCodecInfo info, VideoCodecMimeType type) {
+    // -twinlife- 190218: handle IllegalArgumentException on some devices
     if (!MediaCodecUtils.codecSupportsType(info, type)) {
       return false;
     }
-    // Check for a supported color format.
-    if (MediaCodecUtils.selectColorFormat(
-            MediaCodecUtils.DECODER_COLOR_FORMATS, info.getCapabilitiesForType(type.mimeType()))
-        == null) {
-      return false;
+    try {
+        // Check for a supported color format.
+        if (MediaCodecUtils.selectColorFormat(
+                MediaCodecUtils.DECODER_COLOR_FORMATS, info.getCapabilitiesForType(type.mimeType()))
+            == null) {
+          return false;
+	  }
+    } catch (IllegalArgumentException exception) {
+	return false;
     }
+    // -twinlife- 190218
     return isCodecAllowed(info);
   }
 

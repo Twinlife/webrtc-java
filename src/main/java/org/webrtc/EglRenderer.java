@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class EglRenderer implements VideoSink {
   private static final String TAG = "EglRenderer";
+  private static final UUID EMPTY_UUID = new UUID(0L, 0L); // All zeros
   private static final long LOG_INTERVAL_SEC = 4;
 
   public interface FrameListener { void onFrame(Bitmap frame); }
@@ -97,8 +98,7 @@ public class EglRenderer implements VideoSink {
 
   // An id to uniquely identify the renderer, used for when we're scheduling
   // frames for render.
-  @Nullable
-  private UUID id = null;
+  private UUID id = EMPTY_UUID;
 
   // `eglThread` is used for rendering, and is synchronized on `threadLock`.
   private final Object threadLock = new Object();
@@ -673,10 +673,10 @@ public class EglRenderer implements VideoSink {
               renderSwapBufferTimeNs += (System.nanoTime() - swapBuffersStartTimeNs);
             }
           };
-      if (id != null) {
-        eglThread.scheduleRenderUpdate(id, renderUpdate);
-      } else {
+      if (id.equals(EMPTY_UUID)) {
         eglThread.scheduleRenderUpdate(renderUpdate);
+      } else {
+        eglThread.scheduleRenderUpdate(id, renderUpdate);
       }
     }
   }
