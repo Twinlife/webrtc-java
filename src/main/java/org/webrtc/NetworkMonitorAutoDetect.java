@@ -278,8 +278,7 @@ public class NetworkMonitorAutoDetect extends BroadcastReceiver implements Netwo
       // Note that getActiveNetwork and getActiveNetworkInfo return null if no default network is
       // currently active.
       if (networkInfo.getType() == ConnectivityManager.TYPE_VPN) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-            && network.equals(connectivityManager.getActiveNetwork())) {
+        if (network.equals(connectivityManager.getActiveNetwork())) {
           // If a VPN network is in place, we can find the underlying network type via querying the
           // active network info thanks to
           // https://android.googlesource.com/platform/frameworks/base/+/d6a7980d
@@ -890,12 +889,6 @@ public class NetworkMonitorAutoDetect extends BroadcastReceiver implements Netwo
    */
   @SuppressLint("NewApi")
   private static long networkToNetId(Network network) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       return network.getNetworkHandle();
-    }
-
-    // NOTE(honghaiz): This depends on Android framework implementation details.
-    // These details cannot change because Lollipop has been released.
-    return Integer.parseInt(network.toString());
   }
 }

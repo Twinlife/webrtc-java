@@ -311,21 +311,13 @@ class WebRtcAudioRecord {
     int bufferSizeInBytes = Math.max(BUFFER_SIZE_FACTOR * minBufferSize, byteBuffer.capacity());
     Logging.d(TAG, "bufferSizeInBytes: " + bufferSizeInBytes);
     try {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        // Use the AudioRecord.Builder class on Android M (23) and above.
-        // Throws IllegalArgumentException.
-        audioRecord = createAudioRecordOnMOrHigher(
-            audioSource, sampleRate, channelConfig, audioFormat, bufferSizeInBytes);
-        audioSourceMatchesRecordingSessionRef.set(null);
-        if (preferredDevice != null) {
-          setPreferredDevice(preferredDevice);
-        }
-      } else {
-        // Use the old AudioRecord constructor for API levels below 23.
-        // Throws UnsupportedOperationException.
-        audioRecord = createAudioRecordOnLowerThanM(
-            audioSource, sampleRate, channelConfig, audioFormat, bufferSizeInBytes);
-        audioSourceMatchesRecordingSessionRef.set(null);
+      // Use the AudioRecord.Builder class on Android M (23) and above.
+      // Throws IllegalArgumentException.
+      audioRecord = createAudioRecordOnMOrHigher(
+              audioSource, sampleRate, channelConfig, audioFormat, bufferSizeInBytes);
+      audioSourceMatchesRecordingSessionRef.set(null);
+      if (preferredDevice != null) {
+        setPreferredDevice(preferredDevice);
       }
     } catch (IllegalArgumentException | UnsupportedOperationException | SecurityException e) {
       // Report of exception message is sufficient. Example: "Cannot create AudioRecord".
@@ -358,8 +350,6 @@ class WebRtcAudioRecord {
    * Prefer a specific {@link AudioDeviceInfo} device for recording. Calling after recording starts
    * is valid but may cause a temporary interruption if the audio routing changes.
    */
-  @RequiresApi(Build.VERSION_CODES.M)
-  @TargetApi(Build.VERSION_CODES.M)
   void setPreferredDevice(@Nullable AudioDeviceInfo preferredDevice) {
     Logging.d(
         TAG, "setPreferredDevice " + (preferredDevice != null ? preferredDevice.getId() : null));
@@ -417,7 +407,6 @@ class WebRtcAudioRecord {
     return true;
   }
 
-  @TargetApi(Build.VERSION_CODES.M)
   private static AudioRecord createAudioRecordOnMOrHigher(
       int audioSource, int sampleRate, int channelConfig, int audioFormat, int bufferSizeInBytes) throws SecurityException {
     Logging.d(TAG, "createAudioRecordOnMOrHigher");
@@ -446,14 +435,11 @@ class WebRtcAudioRecord {
             + "sample rate: " + audioRecord.getSampleRate());
   }
 
-  @TargetApi(Build.VERSION_CODES.M)
   private void logMainParametersExtended() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      Logging.d(TAG,
-          "AudioRecord: "
-              // The frame count of the native AudioRecord buffer.
-              + "buffer size in frames: " + audioRecord.getBufferSizeInFrames());
-    }
+    Logging.d(TAG,
+            "AudioRecord: "
+                    // The frame count of the native AudioRecord buffer.
+                    + "buffer size in frames: " + audioRecord.getBufferSizeInFrames());
   }
 
   @TargetApi(Build.VERSION_CODES.N)

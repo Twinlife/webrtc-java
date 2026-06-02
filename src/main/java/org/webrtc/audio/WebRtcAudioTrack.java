@@ -255,11 +255,7 @@ class WebRtcAudioTrack {
       releaseAudioResources();
       return -1;
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      initialBufferSizeInFrames = audioTrack.getBufferSizeInFrames();
-    } else {
-      initialBufferSizeInFrames = -1;
-    }
+    initialBufferSizeInFrames = audioTrack.getBufferSizeInFrames();
     logMainParameters();
     logMainParametersExtended();
     return minBufferSizeInBytes;
@@ -469,20 +465,15 @@ class WebRtcAudioTrack {
   }
 
   private void logBufferSizeInFrames() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      Logging.d(TAG,
-          "AudioTrack: "
-              // The effective size of the AudioTrack buffer that the app writes to.
-              + "buffer size in frames: " + audioTrack.getBufferSizeInFrames());
-    }
+    Logging.d(TAG,
+            "AudioTrack: "
+                    // The effective size of the AudioTrack buffer that the app writes to.
+                    + "buffer size in frames: " + audioTrack.getBufferSizeInFrames());
   }
 
   @CalledByNative
   private int getBufferSizeInFrames() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      return audioTrack.getBufferSizeInFrames();
-    }
-    return -1;
+    return audioTrack.getBufferSizeInFrames();
   }
 
   @CalledByNative

@@ -136,10 +136,7 @@ class MediaCodecVideoDecoderFactory implements VideoDecoderFactory {
     if (name.startsWith(QCOM_PREFIX)) {
       return true;
     }
-    // Support H.264 HP decoding on Exynos chips for Android M and above.
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && name.startsWith(EXYNOS_PREFIX)) {
-      return true;
-    }
-    return false;
+    // Support H.264 HP decoding on Exynos chips.
+      return name.startsWith(EXYNOS_PREFIX);
   }
 }

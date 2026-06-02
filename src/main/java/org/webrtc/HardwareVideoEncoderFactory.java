@@ -214,11 +214,9 @@ public class HardwareVideoEncoderFactory implements VideoEncoderFactory {
   private boolean isHardwareSupportedInCurrentSdkVp8(MediaCodecInfo info) {
     String name = info.getName();
     // QCOM Vp8 encoder is always supported.
-    return name.startsWith(QCOM_PREFIX)
-        // Exynos VP8 encoder is supported in M or later.
-        || (name.startsWith(EXYNOS_PREFIX) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-        // Intel Vp8 encoder is always supported, with the intel encoder enabled.
-        || (name.startsWith(INTEL_PREFIX) && enableIntelVp8Encoder);
+    // Exynos VP8 encoder is supported in M or later.
+    // Intel Vp8 encoder is always supported, with the intel encoder enabled.
+    return name.startsWith(QCOM_PREFIX) || name.startsWith(EXYNOS_PREFIX) || name.startsWith(INTEL_PREFIX) && enableIntelVp8Encoder;
   }
 
   private boolean isHardwareSupportedInCurrentSdkVp9(MediaCodecInfo info) {
@@ -247,9 +245,6 @@ public class HardwareVideoEncoderFactory implements VideoEncoderFactory {
 
   private int getForcedKeyFrameIntervalMs(VideoCodecMimeType type, String codecName) {
     if (type == VideoCodecMimeType.VP8 && codecName.startsWith(QCOM_PREFIX)) {
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-        return QCOM_VP8_KEY_FRAME_INTERVAL_ANDROID_L_MS;
-      }
       if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
         return QCOM_VP8_KEY_FRAME_INTERVAL_ANDROID_M_MS;
       }

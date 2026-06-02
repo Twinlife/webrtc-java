@@ -1,11 +1,10 @@
 plugins {
     id 'com.android.library'
-    alias libs.plugins.kotlin.android
 }
 
 android {
     compileSdkVersion libs.versions.compile.sdk.version.get()
-    namespace 'org.webrtc'
+    namespace = 'org.webrtc'
 
     buildFeatures {
         buildConfig = true
@@ -23,7 +22,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         staging {
             initWith buildTypes.release

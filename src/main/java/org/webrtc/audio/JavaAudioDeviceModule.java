@@ -431,7 +431,6 @@ public class JavaAudioDeviceModule implements AudioDeviceModule {
    * from. Otherwise the best-matching device for other parameters will be used. Calling after
    * recording is started may cause a temporary interruption if the audio routing changes.
    */
-  @RequiresApi(Build.VERSION_CODES.M)
   public void setPreferredInputDevice(AudioDeviceInfo preferredInputDevice) {
     Logging.d(TAG, "setPreferredInputDevice: " + preferredInputDevice.getId());
     audioInput.setPreferredDevice(preferredInputDevice);
