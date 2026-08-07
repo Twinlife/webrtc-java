@@ -20,7 +20,7 @@ import org.webrtc.EncodedImage;
  */
 public interface VideoEncoder {
   /** Settings passed to the encoder by WebRTC. */
-  public class Settings {
+  class Settings {
     public final int numberOfCores;
     public final int width;
     public final int height;
@@ -53,7 +53,7 @@ public interface VideoEncoder {
   }
 
   /** Capabilities (loss notification, etc.) passed to the encoder by WebRTC. */
-  public class Capabilities {
+  class Capabilities {
     /**
      * The remote side has support for the loss notification RTCP feedback message format, and will
      * be sending these feedback messages if necessary.
@@ -67,7 +67,7 @@ public interface VideoEncoder {
   }
 
   /** Additional info for encoding. */
-  public class EncodeInfo {
+  class EncodeInfo {
     public final EncodedImage.FrameType[] frameTypes;
 
     @CalledByNative("EncodeInfo")
@@ -78,21 +78,21 @@ public interface VideoEncoder {
 
   // TODO(sakal): Add values to these classes as necessary.
   /** Codec specific information about the encoded frame. */
-  public class CodecSpecificInfo {}
+  class CodecSpecificInfo {}
 
-  public class CodecSpecificInfoVP8 extends CodecSpecificInfo {}
+  class CodecSpecificInfoVP8 extends CodecSpecificInfo {}
 
-  public class CodecSpecificInfoVP9 extends CodecSpecificInfo {}
+  class CodecSpecificInfoVP9 extends CodecSpecificInfo {}
 
-  public class CodecSpecificInfoH264 extends CodecSpecificInfo {}
+  class CodecSpecificInfoH264 extends CodecSpecificInfo {}
 
-  public class CodecSpecificInfoAV1 extends CodecSpecificInfo {}
+  class CodecSpecificInfoAV1 extends CodecSpecificInfo {}
 
   /**
    * Represents bitrate allocated for an encoder to produce frames. Bitrate can be divided between
    * spatial and temporal layers.
    */
-  public class BitrateAllocation {
+  class BitrateAllocation {
     // First index is the spatial layer and second the temporal layer.
     public final int[][] bitratesBbs;
 
@@ -120,7 +120,7 @@ public interface VideoEncoder {
   }
 
   /** Settings for WebRTC quality based scaling. */
-  public class ScalingSettings {
+  class ScalingSettings {
     public final boolean on;
     @Nullable public final Integer low;
     @Nullable public final Integer high;
@@ -186,7 +186,7 @@ public interface VideoEncoder {
   /**
    * Bitrate limits for resolution.
    */
-  public class ResolutionBitrateLimits {
+  class ResolutionBitrateLimits {
     /**
      * Maximum size of video frame, in pixels, the bitrate limits are intended for.
      */
@@ -237,7 +237,7 @@ public interface VideoEncoder {
   }
 
   /** Rate control parameters. */
-  public class RateControlParameters {
+  class RateControlParameters {
     /**
      * Adjusted target bitrate, per spatial/temporal layer. May be lower or higher than the target
      * depending on encoder behaviour.
@@ -261,7 +261,7 @@ public interface VideoEncoder {
   /**
    * Metadata about the Encoder.
    */
-  public class EncoderInfo {
+  class EncoderInfo {
     /**
      * The width and height of the incoming video frames should be divisible by
      * |requested_resolution_alignment|
@@ -291,7 +291,7 @@ public interface VideoEncoder {
     }
   }
 
-  public interface Callback {
+  interface Callback {
     /**
      * Old encoders assume that the byte buffer held by `frame` is not accessed after the call to
      * this method returns. If the pipeline downstream needs to hold on to the buffer, it then has
@@ -367,7 +367,7 @@ public interface VideoEncoder {
   @CalledByNative
   default ResolutionBitrateLimits[] getResolutionBitrateLimits() {
     // TODO(ssilkin): Update downstream projects and remove default implementation.
-    ResolutionBitrateLimits bitrate_limits[] = {};
+    ResolutionBitrateLimits[] bitrate_limits = {};
     return bitrate_limits;
   }
 

@@ -160,9 +160,9 @@ public class SQLiteStatement extends SQLiteProgram /*implements
         }
     }
 
-    private final native void native_execute();
+    private native void native_execute();
 
-    private final native long native_1x1_long();
+    private native long native_1x1_long();
 
-    private final native String native_1x1_string();
+    private native String native_1x1_string();
 }

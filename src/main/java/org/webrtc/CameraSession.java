@@ -16,7 +16,7 @@ import android.hardware.display.DisplayManager;
 import android.view.Display;
 import android.view.Surface;
 
-interface CameraSession {
+public interface CameraSession {
   enum FailureType { ERROR, DISCONNECTED }
 
   // Callbacks are fired on the camera thread.

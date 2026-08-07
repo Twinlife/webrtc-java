@@ -54,6 +54,6 @@ public class DefaultVideoEncoderFactory implements VideoEncoderFactory {
     supportedCodecInfos.addAll(Arrays.asList(softwareVideoEncoderFactory.getSupportedCodecs()));
     supportedCodecInfos.addAll(Arrays.asList(hardwareVideoEncoderFactory.getSupportedCodecs()));
 
-    return supportedCodecInfos.toArray(new VideoCodecInfo[supportedCodecInfos.size()]);
+    return supportedCodecInfos.toArray(new VideoCodecInfo[0]);
   }
 }

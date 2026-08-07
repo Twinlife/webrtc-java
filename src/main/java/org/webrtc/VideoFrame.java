@@ -125,7 +125,7 @@ public class VideoFrame implements RefCounted {
 
       private final int glTarget;
 
-      private Type(final int glTarget) {
+      Type(final int glTarget) {
         this.glTarget = glTarget;
       }
 
@@ -158,7 +158,7 @@ public class VideoFrame implements RefCounted {
      * Returns the width of the texture in memory. This should only be used for downscaling, and you
      * should still respect the width from getWidth().
      */
-    default public int getUnscaledWidth() {
+    default int getUnscaledWidth() {
       return getWidth();
     }
 
@@ -166,7 +166,7 @@ public class VideoFrame implements RefCounted {
      * Returns the height of the texture in memory. This should only be used for downscaling, and
      * you should still respect the height from getHeight().
      */
-    default public int getUnscaledHeight() {
+    default int getUnscaledHeight() {
       return getHeight();
     }
   }

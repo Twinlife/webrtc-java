@@ -103,21 +103,11 @@ public class ThreadUtils {
   }
 
   public static void joinUninterruptibly(final Thread thread) {
-    executeUninterruptibly(new BlockingOperation() {
-      @Override
-      public void run() throws InterruptedException {
-        thread.join();
-      }
-    });
+    executeUninterruptibly(thread::join);
   }
 
   public static void awaitUninterruptibly(final CountDownLatch latch) {
-    executeUninterruptibly(new BlockingOperation() {
-      @Override
-      public void run() throws InterruptedException {
-        latch.await();
-      }
-    });
+    executeUninterruptibly(latch::await);
   }
 
   public static boolean awaitUninterruptibly(CountDownLatch barrier, long timeoutMs) {

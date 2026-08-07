@@ -25,7 +25,6 @@ import net.sqlcipher.CursorWindow;
 import org.webrtc.BuildConfig;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -43,27 +42,27 @@ public class SQLiteCursor extends AbstractWindowedCursor {
     /**
      * The name of the table to edit
      */
-    private String mEditTable;
+    private final String mEditTable;
 
     /**
      * The names of the columns in the rows
      */
-    private String[] mColumns;
+    private final String[] mColumns;
 
     /**
      * The query object for the cursor
      */
-    private SQLiteQuery mQuery;
+    private final SQLiteQuery mQuery;
 
     /**
      * The database the cursor was created from
      */
-    private SQLiteDatabase mDatabase;
+    private final SQLiteDatabase mDatabase;
 
     /**
      * The compiled query this cursor came from
      */
-    private SQLiteCursorDriver mDriver;
+    private final SQLiteCursorDriver mDriver;
 
     /**
      * The number of rows in the cursor
@@ -82,17 +81,12 @@ public class SQLiteCursor extends AbstractWindowedCursor {
     /**
      * Used to find out where a cursor was allocated in case it never got released.
      */
-    private Throwable mStackTrace;
+    private final Throwable mStackTrace;
 
-    /**
-     * mMaxRead is the max items that each cursor window reads
-     * default to a very high value
-     */
-    private int mMaxRead = Integer.MAX_VALUE;
     private int mInitialRead = Integer.MAX_VALUE;
     private int mCursorState = 0;
     private ReentrantLock mLock = null;
-    private boolean mPendingData = false;
+    private final boolean mPendingData = false;
 
     public void setFillWindowForwardOnly(boolean value) {
         fillWindowForwardOnly = value;
@@ -110,7 +104,10 @@ public class SQLiteCursor extends AbstractWindowedCursor {
      * @hide
      */
     public void setLoadStyle(int initialRead, int maxRead) {
-        mMaxRead = maxRead;
+        /**
+         * mMaxRead is the max items that each cursor window reads
+         * default to a very high value
+         */
         mInitialRead = initialRead;
         mLock = new ReentrantLock(true);
     }

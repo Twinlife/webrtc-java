@@ -10,7 +10,7 @@
 
 package org.webrtc;
 
-import android.annotation.TargetApi;
+import androidx.annotation.RequiresApi;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecInfo.CodecCapabilities;
 import android.os.Build;
@@ -101,7 +101,7 @@ class MediaCodecUtils {
     return !isSoftwareOnly(info);
   }
 
-  @TargetApi(29)
+  @RequiresApi(29)
   private static boolean isHardwareAcceleratedQOrHigher(android.media.MediaCodecInfo codecInfo) {
     return codecInfo.isHardwareAccelerated();
   }
@@ -119,7 +119,7 @@ class MediaCodecUtils {
     return false;
   }
 
-  @TargetApi(29)
+  @RequiresApi(29)
   private static boolean isSoftwareOnlyQOrHigher(android.media.MediaCodecInfo codecInfo) {
     return codecInfo.isSoftwareOnly();
   }

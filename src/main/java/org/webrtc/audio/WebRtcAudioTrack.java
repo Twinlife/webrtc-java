@@ -11,7 +11,6 @@
 package org.webrtc.audio;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.AudioFormat;
@@ -20,6 +19,8 @@ import android.media.AudioTrack;
 import android.os.Build;
 import android.os.Process;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+
 import java.nio.ByteBuffer;
 import org.webrtc.CalledByNative;
 import org.webrtc.Logging;
@@ -437,7 +438,7 @@ class WebRtcAudioTrack {
   // that happen in low-latency mode during the call will cause the AEC to perform worse.
   // The behavior of the low-latency mode may be device dependent, use at your own risk.
   @SuppressLint("Range")
-  @TargetApi(Build.VERSION_CODES.O)
+  @RequiresApi(Build.VERSION_CODES.O)
   private static AudioTrack createAudioTrackOnOreoOrHigher(int sampleRateInHz, int channelConfig,
       int bufferSizeInBytes, @Nullable AudioAttributes overrideAttributes) {
     Logging.d(TAG, "createAudioTrackOnOreoOrHigher");
@@ -458,7 +459,7 @@ class WebRtcAudioTrack {
         .build();
   }
 
-  @TargetApi(Build.VERSION_CODES.Q)
+  @RequiresApi(Build.VERSION_CODES.Q)
   private static AudioAttributes.Builder applyAttributesOnQOrHigher(
       AudioAttributes.Builder builder, AudioAttributes overrideAttributes) {
     return builder.setAllowedCapturePolicy(overrideAttributes.getAllowedCapturePolicy());

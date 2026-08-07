@@ -34,10 +34,10 @@ public class SocketProxyDescriptor {
         if (disableSNI) {
             method |= Container.CONFIG_DISABLE_SNI;
         }
-    	if (proxyPath != null) {
-	        method |= Container.CONFIG_SNI_OVERRIDE;
-	    }
-	    return new SocketProxyDescriptor(proxyAddress, proxyPort, proxyPath, method);
+        if (proxyPath != null) {
+            method |= Container.CONFIG_SNI_OVERRIDE;
+        }
+        return new SocketProxyDescriptor(proxyAddress, proxyPort, proxyPath, method);
     }
 
     public static SocketProxyDescriptor createKeyProxy(@NonNull String proxyAddress, int proxyPort, @NonNull String proxyPath) {

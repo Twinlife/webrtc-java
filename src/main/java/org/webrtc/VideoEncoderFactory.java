@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
 
 /** Factory for creating VideoEncoders. */
 public interface VideoEncoderFactory {
-  public interface VideoEncoderSelector {
+  interface VideoEncoderSelector {
     /** Called with the VideoCodecInfo of the currently used encoder. */
     @CalledByNative("VideoEncoderSelector") void onCurrentEncoder(VideoCodecInfo info);
 

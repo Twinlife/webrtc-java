@@ -19,12 +19,7 @@ public class PlatformSoftwareVideoDecoderFactory extends MediaCodecVideoDecoderF
    * Default allowed predicate.
    */
   private static final Predicate<MediaCodecInfo> defaultAllowedPredicate =
-      new Predicate<MediaCodecInfo>() {
-        @Override
-        public boolean test(MediaCodecInfo arg) {
-          return MediaCodecUtils.isSoftwareOnly(arg);
-        }
-      };
+          MediaCodecUtils::isSoftwareOnly;
 
   /**
    * Creates a PlatformSoftwareVideoDecoderFactory that supports surface texture rendering.

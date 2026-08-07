@@ -49,11 +49,6 @@ import android.util.Log;
     /* package */ long nStatement = 0;
 
     /**
-     * the following are for debugging purposes
-     */
-    private String mSqlStmt = null;
-
-    /**
      * when in cache and is in use, this member is set
      */
     private boolean mInUse = false;
@@ -63,7 +58,9 @@ import android.util.Log;
             throw new IllegalStateException("database " + db.getPath() + " already closed");
         }
         mDatabase = db;
-        mSqlStmt = sql;
+        /**
+         * the following are for debugging purposes
+         */
         this.nHandle = db.mNativeHandle;
         compile(sql, true);
     }
@@ -164,7 +161,7 @@ import android.util.Log;
      *
      * @param sql The SQL to compile.
      */
-    private final native void native_compile(String sql);
+    private native void native_compile(String sql);
 
-    private final native void native_finalize();
+    private native void native_finalize();
 }

@@ -15,7 +15,6 @@ import static android.media.AudioManager.MODE_IN_COMMUNICATION;
 import static android.media.AudioManager.MODE_NORMAL;
 import static android.media.AudioManager.MODE_RINGTONE;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.media.AudioDeviceInfo;
@@ -24,6 +23,9 @@ import android.media.AudioManager;
 import android.media.MediaRecorder.AudioSource;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
+
+import androidx.annotation.RequiresApi;
+
 import java.util.Arrays;
 import org.webrtc.Logging;
 
@@ -181,7 +183,7 @@ public final class WebRtcAudioUtils {
     }
   }
 
-  @TargetApi(VERSION_CODES.N)
+  @RequiresApi(VERSION_CODES.N)
   public static String audioEncodingToString(int enc) {
     switch (enc) {
       case AudioFormat.ENCODING_INVALID:
@@ -193,7 +195,6 @@ public final class WebRtcAudioUtils {
       case AudioFormat.ENCODING_PCM_FLOAT:
         return "PCM_FLOAT";
       case AudioFormat.ENCODING_AC3:
-        return "AC3";
       case AudioFormat.ENCODING_E_AC3:
         return "AC3";
       case AudioFormat.ENCODING_DTS:
@@ -236,23 +237,17 @@ public final class WebRtcAudioUtils {
     Logging.d(tag, "  fixed volume=" + fixedVolume);
     if (!fixedVolume) {
       for (int stream : streams) {
-        StringBuilder info = new StringBuilder();
-        info.append("  " + streamTypeToString(stream) + ": ");
-        info.append("volume=").append(audioManager.getStreamVolume(stream));
-        info.append(", max=").append(audioManager.getStreamMaxVolume(stream));
-        if (Build.VERSION.SDK_INT >= VERSION_CODES.M) {
-          info.append(", muted=").append(audioManager.isStreamMute(stream));
-        }
-        Logging.d(tag, info.toString());
+          String info = "  " + streamTypeToString(stream) + ": " +
+                  "volume=" + audioManager.getStreamVolume(stream) +
+                  ", max=" + audioManager.getStreamMaxVolume(stream) +
+                  ", muted=" + audioManager.isStreamMute(stream);
+          Logging.d(tag, info);
       }
     }
   }
 
   private static void logAudioDeviceInfo(String tag, AudioManager audioManager) {
-    if (Build.VERSION.SDK_INT < VERSION_CODES.M) {
-      return;
-    }
-    final AudioDeviceInfo[] devices = audioManager.getDevices(AudioManager.GET_DEVICES_ALL);
+      final AudioDeviceInfo[] devices = audioManager.getDevices(AudioManager.GET_DEVICES_ALL);
     if (devices.length == 0) {
       return;
     }

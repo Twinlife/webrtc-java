@@ -367,6 +367,6 @@ public abstract class SQLiteProgram extends SQLiteClosable /*implements
 
     protected final native void native_bind_blob(int index, byte[] value);
 
-    private final native void native_clear_bindings();
+    private native void native_clear_bindings();
 }
 

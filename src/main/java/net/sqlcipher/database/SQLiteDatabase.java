@@ -69,12 +69,6 @@ public class SQLiteDatabase extends SQLiteClosable /* implements
         Exclusive,
     }
 
-    // Stores reference to all databases opened in the current process.
-    // (The referent Object is not used at this time.)
-    // INVARIANT: Guarded by sActiveDatabases.
-    private static final WeakHashMap<SQLiteDatabase, Object> sActiveDatabases =
-            new WeakHashMap<>();
-
     public int status(int operation, boolean reset) {
         return native_status(operation, reset);
     }
@@ -211,7 +205,7 @@ public class SQLiteDatabase extends SQLiteClosable /* implements
     private final ReentrantLock mLock = new ReentrantLock(true);
 
     private long mLockAcquiredWallTime = 0L;
-    private long mLockAcquiredThreadTime = 0L;
+    private final long mLockAcquiredThreadTime = 0L;
 
     // limit the frequency of complaints about each database to one within 20 sec
     // unless run command adb shell setprop log.tag.Database VERBOSE
@@ -285,7 +279,6 @@ public class SQLiteDatabase extends SQLiteClosable /* implements
      * @hide
      */
     public static final int MAX_SQL_CACHE_SIZE = 250;
-    private final int mMaxSqlCacheSize = MAX_SQL_CACHE_SIZE; // max cache size per Database instance
     private int mCacheFullWarnings;
     private static final int MAX_WARNINGS_ON_CACHESIZE_CONDITION = 1;
 
@@ -344,10 +337,6 @@ public class SQLiteDatabase extends SQLiteClosable /* implements
                 mTimeClosed = getTime();
             }
             dbclose();
-
-            synchronized (sActiveDatabases) {
-                sActiveDatabases.remove(this);
-            }
         }
     }
 
@@ -453,8 +442,7 @@ public class SQLiteDatabase extends SQLiteClosable /* implements
             return;
         }
         if (lockedTime > LOCK_ACQUIRED_WARNING_TIME_IN_MS && BuildConfig.DEBUG) {
-            int threadTime = (int)
-                    0; // ((Debug.threadCpuTimeNanos() - mLockAcquiredThreadTime) / 1000000);
+            int threadTime = 0; // ((Debug.threadCpuTimeNanos() - mLockAcquiredThreadTime) / 1000000);
             if (threadTime > LOCK_ACQUIRED_WARNING_THREAD_TIME_IN_MS ||
                     lockedTime > LOCK_ACQUIRED_WARNING_TIME_IN_MS_ALWAYS_PRINT) {
                 mLastLockMessageTime = elapsedTime;
@@ -509,7 +497,7 @@ public class SQLiteDatabase extends SQLiteClosable /* implements
      * @throws IllegalStateException if the database is not open
      */
     public void beginTransaction() {
-        beginTransactionWithListener((SQLiteTransactionListener) null /* transactionStatusCallback */);
+        beginTransactionWithListener(null /* transactionStatusCallback */);
     }
 
     /**
@@ -855,10 +843,6 @@ public class SQLiteDatabase extends SQLiteClosable /* implements
         }
         if (SQLiteDebug.DEBUG_SQL_TIME) {
             sqliteDatabase.enableSqlProfiling(path);
-        }
-
-        synchronized (sActiveDatabases) {
-            sActiveDatabases.put(sqliteDatabase, null);
         }
 
         return sqliteDatabase;
@@ -1268,7 +1252,7 @@ public class SQLiteDatabase extends SQLiteClosable /* implements
 
             sql.append(')');
         } else {
-            sql.append("(" + nullColumnHack + ") ");
+            sql.append("(").append(nullColumnHack).append(") ");
             values.append("NULL");
         }
 
@@ -1796,7 +1780,8 @@ public class SQLiteDatabase extends SQLiteClosable /* implements
                 return;
             }
             // add this <sql, compiledStatement> to the cache
-            if (mCompiledQueries.size() == mMaxSqlCacheSize) {
+            // max cache size per Database instance
+            if (mCompiledQueries.size() == MAX_SQL_CACHE_SIZE) {
                 /*
                  * cache size of {@link #mMaxSqlCacheSize} is not enough for this app.
                  * log a warning MAX_WARNINGS_ON_CACHESIZE_CONDITION times

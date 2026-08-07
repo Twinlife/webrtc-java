@@ -11,6 +11,9 @@
 package org.webrtc;
 
 import android.view.SurfaceHolder;
+
+import androidx.annotation.NonNull;
+
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -39,10 +42,6 @@ public class SurfaceEglRenderer extends EglRenderer implements SurfaceHolder.Cal
    */
   public SurfaceEglRenderer(String name) {
     super(name);
-  }
-
-  public SurfaceEglRenderer(String name, VideoFrameDrawer videoFrameDrawer) {
-    super(name, videoFrameDrawer);
   }
 
   /**
@@ -116,7 +115,7 @@ public class SurfaceEglRenderer extends EglRenderer implements SurfaceHolder.Cal
   }
 
   @Override
-  public void surfaceDestroyed(SurfaceHolder holder) {
+  public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
     ThreadUtils.checkIsOnMainThread();
     final CountDownLatch completionLatch = new CountDownLatch(1);
     releaseEglSurface(completionLatch::countDown);
@@ -124,7 +123,7 @@ public class SurfaceEglRenderer extends EglRenderer implements SurfaceHolder.Cal
   }
 
   @Override
-  public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+  public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
     ThreadUtils.checkIsOnMainThread();
     logD("surfaceChanged: format: " + format + " size: " + width + "x" + height);
   }

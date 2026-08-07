@@ -234,7 +234,7 @@ public abstract class AbstractCursor implements /* CrossProcessCursor,*/ net.sql
             columnName = columnName.substring(periodIndex + 1);
         }
 
-        String columnNames[] = getColumnNames();
+        String[] columnNames = getColumnNames();
         int length = columnNames.length;
         for (int i = 0; i < length; i++) {
             if (columnNames[i].equalsIgnoreCase(columnName)) {
@@ -363,7 +363,7 @@ public abstract class AbstractCursor implements /* CrossProcessCursor,*/ net.sql
      */
     public boolean hasUpdates() {
         synchronized (mUpdatedRows) {
-            return mUpdatedRows.size() > 0;
+            return !mUpdatedRows.isEmpty();
         }
     }
 
@@ -396,7 +396,7 @@ public abstract class AbstractCursor implements /* CrossProcessCursor,*/ net.sql
      * @return true if the field has been updated, false otherwise
      */
     protected boolean isFieldUpdated(int columnIndex) {
-        if (mRowIdColumnIndex != -1 && mUpdatedRows.size() > 0) {
+        if (mRowIdColumnIndex != -1 && !mUpdatedRows.isEmpty()) {
             Map<String, Object> updates = mUpdatedRows.get(mCurrentRowID);
             if (updates != null && updates.containsKey(getColumnNames()[columnIndex])) {
                 return true;

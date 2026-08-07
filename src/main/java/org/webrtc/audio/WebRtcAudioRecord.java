@@ -10,7 +10,6 @@
 
 package org.webrtc.audio;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.media.AudioDeviceInfo;
 import android.media.AudioFormat;
@@ -335,13 +334,15 @@ class WebRtcAudioRecord {
     logMainParametersExtended();
     // Check number of active recording sessions. Should be zero but we have seen conflict cases
     // and adding a log for it can help us figure out details about conflicting sessions.
-    final int numActiveRecordingSessions =
-        logRecordingConfigurations(audioRecord, false /* verifyAudioConfig */);
-    if (numActiveRecordingSessions != 0) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+      final int numActiveRecordingSessions;
+          numActiveRecordingSessions = logRecordingConfigurations(audioRecord, false /* verifyAudioConfig */);
+      if (numActiveRecordingSessions != 0) {
       // Log the conflict as a warning since initialization did in fact succeed. Most likely, the
       // upcoming call to startRecording() will fail under these conditions.
       Logging.w(
           TAG, "Potential microphone conflict. Active sessions: " + numActiveRecordingSessions);
+    }
     }
     return framesPerBuffer;
   }
@@ -442,15 +443,11 @@ class WebRtcAudioRecord {
                     + "buffer size in frames: " + audioRecord.getBufferSizeInFrames());
   }
 
-  @TargetApi(Build.VERSION_CODES.N)
+  @RequiresApi(Build.VERSION_CODES.N)
   // Checks the number of active recording sessions and logs the states of all active sessions.
   // Returns number of active sessions. Note that this could occur on arbituary thread.
   private int logRecordingConfigurations(AudioRecord audioRecord, boolean verifyAudioConfig) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-      Logging.w(TAG, "AudioManager#getActiveRecordingConfigurations() requires N or higher");
-      return 0;
-    }
-    if (audioRecord == null) {
+      if (audioRecord == null) {
       return 0;
     }
 
@@ -522,7 +519,9 @@ class WebRtcAudioRecord {
   private void reportWebRtcAudioRecordInitError(String errorMessage) {
     Logging.e(TAG, "Init recording error: " + errorMessage);
     WebRtcAudioUtils.logAudioState(TAG, context, audioManager);
-    logRecordingConfigurations(audioRecord, false /* verifyAudioConfig */);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+      logRecordingConfigurations(audioRecord, false /* verifyAudioConfig */);
+    }
     if (errorCallback != null) {
       errorCallback.onWebRtcAudioRecordInitError(errorMessage);
     }
@@ -532,7 +531,9 @@ class WebRtcAudioRecord {
       AudioRecordStartErrorCode errorCode, String errorMessage) {
     Logging.e(TAG, "Start recording error: " + errorCode + ". " + errorMessage);
     WebRtcAudioUtils.logAudioState(TAG, context, audioManager);
-    logRecordingConfigurations(audioRecord, false /* verifyAudioConfig */);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+      logRecordingConfigurations(audioRecord, false /* verifyAudioConfig */);
+    }
     if (errorCallback != null) {
       errorCallback.onWebRtcAudioRecordStartError(errorCode, errorMessage);
     }
@@ -602,7 +603,7 @@ class WebRtcAudioRecord {
     future = executor.schedule(callable, CHECK_REC_STATUS_DELAY_MS, TimeUnit.MILLISECONDS);
   }
 
-  @TargetApi(Build.VERSION_CODES.N)
+  @RequiresApi(Build.VERSION_CODES.N)
   private static boolean logActiveRecordingConfigs(
       int session, List<AudioRecordingConfiguration> configs) {
     assertTrue(!configs.isEmpty());
@@ -670,7 +671,7 @@ class WebRtcAudioRecord {
 
   // Verify that the client audio configuration (device and format) matches the requested
   // configuration (same as AudioRecord's).
-  @TargetApi(Build.VERSION_CODES.N)
+  @RequiresApi(Build.VERSION_CODES.N)
   private static boolean verifyAudioConfig(int source, int session, AudioFormat format,
       AudioDeviceInfo device, List<AudioRecordingConfiguration> configs) {
     assertTrue(!configs.isEmpty());
@@ -703,7 +704,7 @@ class WebRtcAudioRecord {
     return false;
   }
 
-  @TargetApi(Build.VERSION_CODES.N)
+  @RequiresApi(Build.VERSION_CODES.N)
   // Returns true if device A parameters matches those of device B.
   // TODO(henrika): can be improved by adding AudioDeviceInfo#getAddress() but it requires API 29.
   private static boolean checkDeviceMatch(AudioDeviceInfo devA, AudioDeviceInfo devB) {

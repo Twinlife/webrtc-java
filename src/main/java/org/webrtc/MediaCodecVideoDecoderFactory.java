@@ -16,7 +16,7 @@ import static org.webrtc.MediaCodecUtils.QCOM_PREFIX;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecInfo.CodecCapabilities;
 import android.media.MediaCodecList;
-import android.os.Build;
+
 import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;

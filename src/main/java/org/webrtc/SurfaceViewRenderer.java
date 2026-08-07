@@ -104,7 +104,6 @@ public class SurfaceViewRenderer extends SurfaceView
    *                 It should be lightweight and must not call removeFrameListener.
    * @param scale    The scale of the Bitmap passed to the callback, or 0 if no Bitmap is
    *                 required.
-   * @param drawer   Custom drawer to use for this frame listener.
    */
   public void addFrameListener(
       EglRenderer.FrameListener listener, float scale, RendererCommon.GlDrawer drawerParam) {
@@ -151,13 +150,6 @@ public class SurfaceViewRenderer extends SurfaceView
   public void setScalingType(RendererCommon.ScalingType scalingType) {
     ThreadUtils.checkIsOnMainThread();
     videoLayoutMeasure.setScalingType(scalingType);
-    requestLayout();
-  }
-
-  public void setScalingType(RendererCommon.ScalingType scalingTypeMatchOrientation,
-      RendererCommon.ScalingType scalingTypeMismatchOrientation) {
-    ThreadUtils.checkIsOnMainThread();
-    videoLayoutMeasure.setScalingType(scalingTypeMatchOrientation, scalingTypeMismatchOrientation);
     requestLayout();
   }
 
@@ -249,8 +241,13 @@ public class SurfaceViewRenderer extends SurfaceView
   public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
 
   private String getResourceName() {
+    // -- twinlife 2026-08-06: don't try to get the resource name for invalid IDs.
+    final int id = getId();
+    if (id < 0) {
+      return "";
+    }
     try {
-      return getResources().getResourceEntryName(getId());
+      return getResources().getResourceEntryName(id);
     } catch (NotFoundException e) {
       return "";
     }

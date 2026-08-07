@@ -32,7 +32,7 @@ class Camera1Session implements CameraSession {
   private static final Histogram camera1ResolutionHistogram = Histogram.createEnumeration(
       "WebRTC.Android.Camera1.Resolution", CameraEnumerationAndroid.COMMON_RESOLUTIONS.size());
 
-  private static enum SessionState { RUNNING, STOPPED }
+  private enum SessionState { RUNNING, STOPPED }
 
   private final Handler cameraThreadHandler;
   private final Events events;
@@ -229,22 +229,19 @@ class Camera1Session implements CameraSession {
 
     state = SessionState.RUNNING;
 
-    camera.setErrorCallback(new Camera.ErrorCallback() {
-      @Override
-      public void onError(int error, Camera camera) {
-        String errorMessage;
-        if (error == Camera.CAMERA_ERROR_SERVER_DIED) {
-          errorMessage = "Camera server died!";
-        } else {
-          errorMessage = "Camera error: " + error;
-        }
-        Logging.e(TAG, errorMessage);
-        stopInternal();
-        if (error == Camera.CAMERA_ERROR_EVICTED) {
-          events.onCameraDisconnected(Camera1Session.this);
-        } else {
-          events.onCameraError(Camera1Session.this, errorMessage);
-        }
+    camera.setErrorCallback((error, camera) -> {
+      String errorMessage;
+      if (error == Camera.CAMERA_ERROR_SERVER_DIED) {
+        errorMessage = "Camera server died!";
+      } else {
+        errorMessage = "Camera error: " + error;
+      }
+      Logging.e(TAG, errorMessage);
+      stopInternal();
+      if (error == Camera.CAMERA_ERROR_EVICTED) {
+        events.onCameraDisconnected(Camera1Session.this);
+      } else {
+        events.onCameraError(Camera1Session.this, errorMessage);
       }
     });
 

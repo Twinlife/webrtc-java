@@ -322,7 +322,7 @@ class EglBase10Impl implements EglBase10 {
 
   @Override
   public int surfaceWidth() {
-    final int widthArray[] = new int[1];
+    final int[] widthArray = new int[1];
     eglConnection.getEgl().eglQuerySurface(
         eglConnection.getDisplay(), eglSurface, EGL10.EGL_WIDTH, widthArray);
     return widthArray[0];
@@ -330,7 +330,7 @@ class EglBase10Impl implements EglBase10 {
 
   @Override
   public int surfaceHeight() {
-    final int heightArray[] = new int[1];
+    final int[] heightArray = new int[1];
     eglConnection.getEgl().eglQuerySurface(
         eglConnection.getDisplay(), eglSurface, EGL10.EGL_HEIGHT, heightArray);
     return heightArray[0];

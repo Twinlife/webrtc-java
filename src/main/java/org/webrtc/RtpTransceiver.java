@@ -43,7 +43,7 @@ public class RtpTransceiver {
 
     private final int nativeIndex;
 
-    private RtpTransceiverDirection(int nativeIndex) {
+    RtpTransceiverDirection(int nativeIndex) {
       this.nativeIndex = nativeIndex;
     }
 

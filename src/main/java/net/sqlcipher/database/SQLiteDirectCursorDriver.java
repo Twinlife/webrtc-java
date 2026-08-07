@@ -25,10 +25,10 @@ import net.sqlcipher.database.SQLiteDatabase.CursorFactory;
  * @hide
  */
 public class SQLiteDirectCursorDriver implements SQLiteCursorDriver {
-    private String mEditTable;
-    private SQLiteDatabase mDatabase;
+    private final String mEditTable;
+    private final SQLiteDatabase mDatabase;
     private Cursor mCursor;
-    private String mSql;
+    private final String mSql;
     private SQLiteQuery mQuery;
 
     public SQLiteDirectCursorDriver(SQLiteDatabase db, String sql, String editTable) {

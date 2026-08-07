@@ -21,7 +21,7 @@ package net.sqlcipher.database;
  */
 public abstract class SQLiteClosable {
     private int mReferenceCount = 1;
-    private Object mLock = new Object();
+    private final Object mLock = new Object();
 
     protected abstract void onAllReferencesReleased();
 

@@ -18,7 +18,6 @@ import java.util.Arrays;
 import java.util.concurrent.Exchanger;
 import java.util.List;
 
-@SuppressWarnings("deprecation")
 abstract class CameraCapturer implements CameraVideoCapturer {
   enum SwitchState {
     IDLE, // No switch requested.
@@ -297,12 +296,7 @@ abstract class CameraCapturer implements CameraVideoCapturer {
         cameraStatistics.release();
         cameraStatistics = null;
         final CameraSession oldSession = currentSession;
-        cameraThreadHandler.post(new Runnable() {
-          @Override
-          public void run() {
-            oldSession.stop();
-          }
-        });
+        cameraThreadHandler.post(oldSession::stop);
         currentSession = null;
         capturerObserver.onCapturerStopped();
       } else {
@@ -455,12 +449,7 @@ abstract class CameraCapturer implements CameraVideoCapturer {
       cameraStatistics.release();
       cameraStatistics = null;
       final CameraSession oldSession = currentSession;
-      cameraThreadHandler.post(new Runnable() {
-        @Override
-        public void run() {
-          oldSession.stop();
-        }
-      });
+      cameraThreadHandler.post(oldSession::stop);
       currentSession = null;
 
       cameraName = selectedCameraName;

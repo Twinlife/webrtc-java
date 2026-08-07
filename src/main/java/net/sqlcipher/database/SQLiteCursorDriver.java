@@ -55,5 +55,5 @@ public interface SQLiteCursorDriver {
      *
      * @param bindArgs the new arguments
      */
-    public void setBindArguments(String[] bindArgs);
+    void setBindArguments(String[] bindArgs);
 }

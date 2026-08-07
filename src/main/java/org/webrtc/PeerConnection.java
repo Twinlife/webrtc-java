@@ -20,10 +20,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.webrtc.CandidatePairChangeEvent;
-import org.webrtc.DataChannel;
-import org.webrtc.MediaStreamTrack;
-import org.webrtc.RtpTransceiver;
 
 /**
  * Java-land version of the PeerConnection APIs; wraps the C++ API
@@ -107,7 +103,7 @@ public class PeerConnection {
   }
 
   /** Java version of PeerConnectionObserver. */
-  public static interface Observer {
+  public interface Observer {
     /** Triggered when the SignalingState changes. */
     @CalledByNative("Observer") void onSignalingChange(SignalingState newState);
 
@@ -407,7 +403,7 @@ public class PeerConnection {
     CELLULAR_5G(1 << 9);
 
     public final Integer bitMask;
-    private AdapterType(Integer bitMask) {
+    AdapterType(Integer bitMask) {
       this.bitMask = bitMask;
     }
     private static final Map<Integer, AdapterType> BY_BITMASK = new HashMap<>();

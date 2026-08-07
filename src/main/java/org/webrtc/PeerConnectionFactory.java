@@ -452,14 +452,6 @@ public class PeerConnectionFactory {
 
   @Nullable
   public PeerConnection createPeerConnection(
-      List<PeerConnection.IceServer> iceServers, PeerConnection.Observer observer) {
-    PeerConnection.RTCConfiguration rtcConfig = new PeerConnection.RTCConfiguration(iceServers);
-    rtcConfig.sdpSemantics = PeerConnection.SdpSemantics.UNIFIED_PLAN;
-    return createPeerConnectionInternal(rtcConfig, null /* constraints*/, observer, null);
-  }
-
-  @Nullable
-  public PeerConnection createPeerConnection(
       PeerConnection.RTCConfiguration rtcConfig, PeerConnection.Observer observer) {
     return createPeerConnectionInternal(rtcConfig, null /* constraints */, observer, null);
   }

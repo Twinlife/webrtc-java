@@ -16,16 +16,16 @@ import org.webrtc.MediaStreamTrack;
 /** Java wrapper for a C++ RtpReceiverInterface. */
 public class RtpReceiver {
   /** Java wrapper for a C++ RtpReceiverObserverInterface*/
-  public static interface Observer {
+  public interface Observer {
     // Called when the first audio or video packet is received.
     @CalledByNative("Observer")
-    public void onFirstPacketReceived(MediaStreamTrack.MediaType media_type);
+    void onFirstPacketReceived(MediaStreamTrack.MediaType media_type);
     // Called when the first audio or video packet is received after
     // receptiveness changed.
     // TODO: crbug.com/40821064 - remove default implementation.
     @CalledByNative("Observer")
-    public default void onFirstPacketReceivedAfterReceptiveChange(
-      MediaStreamTrack.MediaType media_type) {}
+    default void onFirstPacketReceivedAfterReceptiveChange(
+            MediaStreamTrack.MediaType media_type) {}
   }
 
   private long nativeRtpReceiver;

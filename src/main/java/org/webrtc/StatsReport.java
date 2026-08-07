@@ -25,9 +25,7 @@ public class StatsReport {
 
     @Override
     public String toString() {
-      StringBuilder builder = new StringBuilder();
-      builder.append("[").append(name).append(": ").append(value).append("]");
-      return builder.toString();
+        return "[" + name + ": " + value + "]";
     }
   }
 
@@ -55,9 +53,9 @@ public class StatsReport {
         .append(", timestamp: ")
         .append(timestamp)
         .append(", values: ");
-    for (int i = 0; i < values.length; ++i) {
-      builder.append(values[i].toString()).append(", ");
-    }
+      for (Value value : values) {
+          builder.append(value.toString()).append(", ");
+      }
     return builder.toString();
   }
 }

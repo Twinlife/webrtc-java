@@ -21,7 +21,7 @@ public interface NetworkChangeDetector {
   // -twinlife- 210820
 
   // java equivalent of c++ android_network_monitor.h / NetworkType.
-  public static enum ConnectionType {
+  enum ConnectionType {
     CONNECTION_UNKNOWN,
     CONNECTION_ETHERNET,
     CONNECTION_WIFI,
@@ -35,7 +35,7 @@ public interface NetworkChangeDetector {
     CONNECTION_NONE
   }
 
-  public static class IPAddress {
+  class IPAddress {
     public final byte[] address;
 
     public IPAddress(byte[] address) {
@@ -50,7 +50,7 @@ public interface NetworkChangeDetector {
   }
 
   /** Java version of NetworkMonitor.NetworkInformation */
-  public static class NetworkInformation {
+  class NetworkInformation {
     public final String name;
     public final ConnectionType type;
     // Used to specify the underlying network type if the type is CONNECTION_VPN.
@@ -99,7 +99,7 @@ public interface NetworkChangeDetector {
   }
 
   /** Observer interface by which observer is notified of network changes. */
-  public static abstract class Observer {
+  abstract class Observer {
     /** Called when default network changes. */
     public abstract void onConnectionTypeChanged(ConnectionType newConnectionType);
 
@@ -123,11 +123,12 @@ public interface NetworkChangeDetector {
     }
   }
 
-  public ConnectionType getCurrentConnectionType();
+  ConnectionType getCurrentConnectionType();
 
-  public boolean supportNetworkCallback();
+  boolean supportNetworkCallback();
 
-  @Nullable public List<NetworkInformation> getActiveNetworkList();
+  @Nullable
+  List<NetworkInformation> getActiveNetworkList();
 
-  public void destroy();
+  void destroy();
 }

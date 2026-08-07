@@ -32,7 +32,7 @@ public class NetworkMonitor {
    * Alerted when the connection type of the network changes. The alert is fired on the UI thread.
    */
   public interface NetworkObserver {
-    public void onConnectionTypeChanged(NetworkChangeDetector.ConnectionType connectionType);
+    void onConnectionTypeChanged(NetworkChangeDetector.ConnectionType connectionType);
   }
 
   private static final String TAG = "NetworkMonitor";
@@ -45,13 +45,7 @@ public class NetworkMonitor {
 
   // Factory for creating NetworkChangeDetector.
   private NetworkChangeDetectorFactory networkChangeDetectorFactory =
-      new NetworkChangeDetectorFactory() {
-        @Override
-        public NetworkChangeDetector create(
-            NetworkChangeDetector.Observer observer, Context context) {
-          return new NetworkMonitorAutoDetect(observer, context);
-        }
-      };
+          NetworkMonitorAutoDetect::new;
 
   // Native observers of the connection type changes.
   private final ArrayList<Long> nativeNetworkObservers;

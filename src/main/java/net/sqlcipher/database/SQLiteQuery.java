@@ -34,12 +34,12 @@ public class SQLiteQuery extends SQLiteProgram {
     /**
      * The index of the unbound OFFSET parameter
      */
-    private int mOffsetIndex;
+    private final int mOffsetIndex;
 
     /**
      * Args to bind on requery
      */
-    private String[] mBindArgs;
+    private final String[] mBindArgs;
     private Object[] mObjectBindArgs;
 
     /**
@@ -207,12 +207,12 @@ public class SQLiteQuery extends SQLiteProgram {
                     bindDouble(i + 1, (Double) value);
                 } else if (value instanceof Float) {
                     float number = ((Number) value).floatValue();
-                    bindDouble(i + 1, (double) number);
+                    bindDouble(i + 1, number);
                 } else if (value instanceof Long) {
                     bindLong(i + 1, (Long) value);
                 } else if (value instanceof Integer) {
                     int number = ((Number) value).intValue();
-                    bindLong(i + 1, (long) number);
+                    bindLong(i + 1, number);
                 } else if (value instanceof Boolean) {
                     bindLong(i + 1, (Boolean) value ? 1 : 0);
                 } else if (value instanceof byte[]) {
@@ -224,12 +224,12 @@ public class SQLiteQuery extends SQLiteProgram {
         }
     }
 
-    private final native int native_fill_window(CursorWindow window,
-                                                int startPos, int requiredPos,
-                                                int offsetParam, int maxRead,
-                                                int lastPos);
+    private native int native_fill_window(CursorWindow window,
+                                          int startPos, int requiredPos,
+                                          int offsetParam, int maxRead,
+                                          int lastPos);
 
-    private final native int native_column_count();
+    private native int native_column_count();
 
-    private final native String native_column_name(int columnIndex);
+    private native String native_column_name(int columnIndex);
 }

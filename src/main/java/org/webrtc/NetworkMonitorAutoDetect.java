@@ -50,7 +50,7 @@ import java.util.Set;
  * this class requires that the app have the platform ACCESS_NETWORK_STATE permission.
  */
 public class NetworkMonitorAutoDetect extends BroadcastReceiver implements NetworkChangeDetector {
-  static class NetworkState {
+  public static class NetworkState {
     private final boolean connected;
     // Defined from ConnectivityManager.TYPE_XXX for non-mobile; for mobile, it is
     // further divided into 2G, 3G, or 4G from the subtype.
@@ -107,7 +107,7 @@ public class NetworkMonitorAutoDetect extends BroadcastReceiver implements Netwo
       Logging.d(TAG,
           "Network"
               + " handle: " + networkToNetId(network)
-              + " becomes available: " + network.toString());
+              + " becomes available: " + network);
 
       synchronized (availableNetworks) {
         availableNetworks.add(network);
@@ -142,7 +142,7 @@ public class NetworkMonitorAutoDetect extends BroadcastReceiver implements Netwo
       // We may use this signal later.
       Logging.d(TAG,
           "Network"
-              + " handle: " + networkToNetId(network) + ", " + network.toString()
+              + " handle: " + networkToNetId(network) + ", " + network
               + " is about to lose in " + maxMsToLive + "ms");
     }
 
@@ -150,7 +150,7 @@ public class NetworkMonitorAutoDetect extends BroadcastReceiver implements Netwo
     public void onLost(Network network) {
       Logging.d(TAG,
           "Network"
-              + " handle: " + networkToNetId(network) + ", " + network.toString()
+              + " handle: " + networkToNetId(network) + ", " + network
               + " is disconnected");
 
       synchronized (availableNetworks) {
@@ -236,7 +236,7 @@ public class NetworkMonitorAutoDetect extends BroadcastReceiver implements Netwo
       }
       NetworkInfo networkInfo = connectivityManager.getNetworkInfo(network);
       if (networkInfo == null) {
-        Logging.w(TAG, "Couldn't retrieve information from network " + network.toString());
+        Logging.w(TAG, "Couldn't retrieve information from network " + network);
         return new NetworkState(false, -1, -1, -1, -1);
       }
       // The general logic of handling a VPN in this method is as follows. getNetworkInfo will
@@ -394,11 +394,11 @@ public class NetworkMonitorAutoDetect extends BroadcastReceiver implements Netwo
       LinkProperties linkProperties = connectivityManager.getLinkProperties(network);
       // getLinkProperties will return null if the network is unknown.
       if (linkProperties == null) {
-        Logging.w(TAG, "Detected unknown network: " + network.toString());
+        Logging.w(TAG, "Detected unknown network: " + network);
         return null;
       }
       if (linkProperties.getInterfaceName() == null) {
-        Logging.w(TAG, "Null interface name for network " + network.toString());
+        Logging.w(TAG, "Null interface name for network " + network);
         return null;
       }
 
@@ -407,7 +407,7 @@ public class NetworkMonitorAutoDetect extends BroadcastReceiver implements Netwo
       if (connectionType == NetworkChangeDetector.ConnectionType.CONNECTION_NONE) {
         // This may not be an error. The OS may signal a network event with connection type
         // NONE when the network disconnects.
-        Logging.d(TAG, "Network " + network.toString() + " is disconnected");
+        Logging.d(TAG, "Network " + network + " is disconnected");
         return null;
       }
 
@@ -415,7 +415,7 @@ public class NetworkMonitorAutoDetect extends BroadcastReceiver implements Netwo
       // which appears to be usable. Just log them here.
       if (connectionType == NetworkChangeDetector.ConnectionType.CONNECTION_UNKNOWN
           || connectionType == NetworkChangeDetector.ConnectionType.CONNECTION_UNKNOWN_CELLULAR) {
-        Logging.d(TAG, "Network " + network.toString() + " connection type is " + connectionType
+        Logging.d(TAG, "Network " + network + " connection type is " + connectionType
                 + " because it has type " + networkState.getNetworkType() + " and subtype "
                 + networkState.getNetworkSubType());
       }
@@ -555,7 +555,7 @@ public class NetworkMonitorAutoDetect extends BroadcastReceiver implements Netwo
             (WifiP2pManager) context.getSystemService(Context.WIFI_P2P_SERVICE);
         WifiP2pManager.Channel channel =
             manager.initialize(context, context.getMainLooper(), null /* listener */);
-        manager.requestGroupInfo(channel, wifiP2pGroup -> { onWifiP2pGroupChange(wifiP2pGroup); });
+        manager.requestGroupInfo(channel, this::onWifiP2pGroupChange);
       }
     }
 

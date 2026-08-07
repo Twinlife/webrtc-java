@@ -11,13 +11,11 @@
 package org.webrtc;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.params.StreamConfigurationMap;
-import android.os.Build;
 import android.os.SystemClock;
 import android.util.AndroidException;
 import android.util.Range;
@@ -149,22 +147,7 @@ public class Camera2Enumerator implements CameraEnumerator {
 
     // Video may be stretched pre LMR1 on legacy implementations.
     // Filter out formats that have different aspect ratio than the sensor array.
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1
-        && supportLevel == CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL_LEGACY) {
-      final Rect activeArraySize =
-          cameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE);
-      final ArrayList<Size> filteredSizes = new ArrayList<Size>();
-
-      for (Size size : sizes) {
-        if (activeArraySize.width() * size.height == activeArraySize.height() * size.width) {
-          filteredSizes.add(size);
-        }
-      }
-
-      return filteredSizes;
-    } else {
-      return sizes;
-    }
+    return sizes;
   }
 
   @Nullable

@@ -16,12 +16,7 @@ import androidx.annotation.Nullable;
 /** Factory for Android hardware VideoDecoders. */
 public class HardwareVideoDecoderFactory extends MediaCodecVideoDecoderFactory {
   private final static Predicate<MediaCodecInfo> defaultAllowedPredicate =
-      new Predicate<MediaCodecInfo>() {
-        @Override
-        public boolean test(MediaCodecInfo arg) {
-          return MediaCodecUtils.isHardwareAccelerated(arg);
-        }
-      };
+          MediaCodecUtils::isHardwareAccelerated;
 
   /** Creates a HardwareVideoDecoderFactory that does not use surface textures. */
   @Deprecated // Not removed yet to avoid breaking callers.
